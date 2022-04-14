@@ -8,8 +8,10 @@ namespace PantrySaverAPIPortal.Services.EmailServices
         private readonly ILogger _logger;
         private readonly IConfiguration configuration;
 
-        public EmailSender(IConfiguration configuration)
+        public EmailSender(ILogger<EmailSender> logger,
+                            IConfiguration configuration)
         {
+            _logger = logger;
             this.configuration = configuration;
         }
 

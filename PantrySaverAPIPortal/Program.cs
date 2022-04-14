@@ -8,6 +8,8 @@ using PantrySaverAPIPortal.Services.AuthenticationServices;
 using PantrySaverAPIPortal.Services.EmailServices;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("PantrySaverDatabase");
@@ -66,11 +68,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
+    // here you put all the origins that websites making requests to this API via JS are hosted at
     options.AddDefaultPolicy(builder =>
-        builder.WithOrigins("http://localhost:4200/")
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
+        builder
+            .WithOrigins("http://localhost:4200", "https://my2centsui.azurewebsites.net/")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
 });
 
 var app = builder.Build();
@@ -81,11 +85,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors();
 
 app.UseTokenManagerMiddleware();
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthentication();
 

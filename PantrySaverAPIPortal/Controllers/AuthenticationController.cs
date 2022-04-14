@@ -52,8 +52,12 @@ namespace PantrySaverAPIPortal.Controllers
             var newId = Guid.NewGuid().ToString();
             ApplicationUser _identity = new ApplicationUser()
             {
+                Id = Guid.NewGuid().ToString(),
                 UserName = registerFrom.Username,
-                Email = registerFrom.Email
+                Email = registerFrom.Email,
+                FirstName = registerFrom.FirstName,
+                LastName = registerFrom.LastName,
+                RegistrationDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"))
             };
 
             var result = await _userManager.CreateAsync(_identity, registerFrom.Password);
@@ -118,6 +122,32 @@ namespace PantrySaverAPIPortal.Controllers
             return await GenerateOTPFor2StepVerification(userFromDB);
         }
 
+        [HttpGet(RouteConfigs.GenerateNewEmailConfirmation)]
+        public async Task<IActionResult> GenerateNewEmailConfirmation([FromQuery] string userName, string clientURI)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var userFromDB = await _userManager.FindByNameAsync(userName);
+
+            // Add default role to user("User")
+            await _userManager.AddToRoleAsync(userFromDB, "User");
+
+            // //Add Email Confirmation
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(userFromDB);
+            var param = new Dictionary<string, string>
+                {
+                    {"token", token },
+                    {"email", userFromDB.Email }
+                };
+
+            var callback = QueryHelpers.AddQueryString(clientURI, param);
+
+            await _emailSender.SendEmailAsync(userFromDB.Email, "Email Confirmation", EmailContent(clientURI, callback));
+
+            return Created("Generate new email confirmation successful!", new { Result = "Generate new email confirmation successful! Please verify your email!" });
+        }
+
         private async Task<IActionResult> GenerateOTPFor2StepVerification(ApplicationUser user)
         {
             var providers = await _userManager.GetValidTwoFactorProvidersAsync(user);
@@ -151,9 +181,7 @@ namespace PantrySaverAPIPortal.Controllers
             return Ok(new
             {
                 Result = validVerification,
-                UserId = userFromDB.Id,
                 Username = userFromDB.UserName,
-                Email = userFromDB.Email,
                 Token = _accessTokenManager.GenerateToken(userFromDB, roles)
             });
         }

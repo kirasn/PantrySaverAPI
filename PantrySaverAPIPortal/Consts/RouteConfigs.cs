@@ -7,5 +7,6 @@ namespace PantrySaverAPIPortal.Consts
         public const string Login = "Login";
         public const string EmailConfirmation = "EmailConfirmation";
         public const string TwoFactorAuthentication = "TwoFactorAuthentication";
+        public const string GenerateNewEmailConfirmation = "GenerateNewEmailConfirmation";
     }
 }
