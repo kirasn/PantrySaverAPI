@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using PantrySaver.Models;
 using PantrySaverAPIPortal.Consts;
 using PantrySaverAPIPortal.DataTransferObjects;
+using PantrySaverAPIPortal.Extensions;
 using PantrySaverAPIPortal.Services.AuthenticationServices;
 using PantrySaverAPIPortal.Services.EmailServices;
 
@@ -119,7 +120,36 @@ namespace PantrySaverAPIPortal.Controllers
                 return BadRequest(new { Result = "Login Failed! Password didn't matched in the database!" });
             }
 
-            return await GenerateOTPFor2StepVerification(userFromDB);
+            if (await _userManager.GetTwoFactorEnabledAsync(userFromDB))
+                return await GenerateOTPFor2StepVerification(userFromDB);
+
+            var roles = await _userManager.GetRolesAsync(userFromDB);
+
+            return Ok(new
+            {
+                Result = result,
+                Username = userFromDB.UserName,
+                Token = _accessTokenManager.GenerateToken(userFromDB, roles)
+            });
+        }
+
+        // POST: api/Authentication/ChangePassword
+        [HttpPost(RouteConfigs.ChangePassword)]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordForm changePasswordForm)
+        {
+            var userName = User.GetUserName();
+
+            var userFromDB = await _userManager.FindByNameAsync(userName);
+
+            if (userFromDB == null)
+                return BadRequest(new { Result = "Change Password Failed! User didn't exist in the database!" });
+
+            var result = await _userManager.ChangePasswordAsync(userFromDB, changePasswordForm.OldPassword, changePasswordForm.NewPassword);
+
+            if (!result.Succeeded)
+                return BadRequest(new { Result = "Old Password didn't matched in the database!" });
+
+            return Ok(new { Result = "Your password has been succesfully changed!" });
         }
 
         [HttpGet(RouteConfigs.GenerateNewEmailConfirmation)]
@@ -159,7 +189,7 @@ namespace PantrySaverAPIPortal.Controllers
             var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
             await _emailSender.SendEmailAsync(user.Email, "Authentication Token", token);
 
-            return Ok();
+            return Ok(new { Result = "Generated Token!" });
         }
 
         [HttpPost(RouteConfigs.TwoFactorAuthentication)]
@@ -184,6 +214,43 @@ namespace PantrySaverAPIPortal.Controllers
                 Username = userFromDB.UserName,
                 Token = _accessTokenManager.GenerateToken(userFromDB, roles)
             });
+        }
+
+        [HttpGet(RouteConfigs.TwoFactorAuthentication)]
+        public async Task<IActionResult> GetTwoStepVerification()
+        {
+            var userName = User.GetUserName();
+
+            var userFromDB = await _userManager.FindByNameAsync(userName);
+
+            if (userFromDB == null)
+                return BadRequest(new { Result = "User didn't exist in the database!" });
+
+            var result = await _userManager.GetTwoFactorEnabledAsync(userFromDB);
+
+            return Ok(result);
+        }
+
+        [HttpPut(RouteConfigs.TwoFactorAuthentication)]
+        public async Task<IActionResult> ChangeTwoStepVerification()
+        {
+            var userName = User.GetUserName();
+
+            var userFromDB = await _userManager.FindByNameAsync(userName);
+
+            if (userFromDB == null)
+                return BadRequest(new { Result = "User didn't exist in the database!" });
+
+            var result = await _userManager.GetTwoFactorEnabledAsync(userFromDB);
+
+            if (result)
+            {
+                await _userManager.SetTwoFactorEnabledAsync(userFromDB, false);
+                return Ok(new { Result = "Your Two Factor Authentication has been disabled!" });
+            }
+
+            await _userManager.SetTwoFactorEnabledAsync(userFromDB, true);
+            return Ok(new { Result = "Your Two Factor Authentication has been enabled!" });
         }
 
         [HttpGet(RouteConfigs.EmailConfirmation)]

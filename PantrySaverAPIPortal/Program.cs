@@ -1,8 +1,11 @@
+using BussinessManagement.AccountManagement;
+using DataManagement.AccountManagement;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PantrySaver.Models;
+using PantrySaverAPIPortal.Helpers;
 using PantrySaverAPIPortal.Middlewares.AccessTokenMiddleware;
 using PantrySaverAPIPortal.Services.AuthenticationServices;
 using PantrySaverAPIPortal.Services.EmailServices;
@@ -60,6 +63,11 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddDbContext<PantrySaverContext>(options =>
         options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<LoggedUserActivity>();
+
+builder.Services.AddScoped<IAccountManagementBL, AccountManagementBL>();
+builder.Services.AddScoped<IAccountManagementDL, AccountManagementDL>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
