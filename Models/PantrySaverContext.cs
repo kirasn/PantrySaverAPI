@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace PantrySaver.Models
         public virtual DbSet<Item> Items { get; set; } = null!;
         public virtual DbSet<Pantry> Pantries { get; set; } = null!;
         public virtual DbSet<PantryItem> PantryItems { get; set; } = null!;
+        public virtual DbSet<EmailSupport> EmailSupports { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -149,6 +151,26 @@ namespace PantrySaver.Models
                     .HasForeignKey(d => d.PantryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__PantryIte__Pantr__7E37BEF6");
+            });
+
+            builder.Entity<EmailSupport>(entity =>
+            {
+                entity.ToTable("EmailSupport");
+
+                entity.HasKey(e => e.EmailSupportId);
+
+                entity.Property(e => e.EmailSupportId)
+                    .HasColumnName("EmailSupportID");
+
+                entity.Property(e => e.EmailFrom)
+                    .HasMaxLength(450)
+                    .HasColumnName("EmailFrom");
+
+                entity.Property(e => e.Content)
+                    .HasColumnName("Content");
+
+                entity.Property(e => e.Answer)
+                    .HasColumnName("Answer");
             });
 
             OnModelCreatingPartial(builder);

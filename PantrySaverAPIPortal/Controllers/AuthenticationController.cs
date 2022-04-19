@@ -196,7 +196,7 @@ namespace PantrySaverAPIPortal.Controllers
         public async Task<IActionResult> TwoStepVerification([FromBody] TwoFactorAuthenticationForm twoFactorForm)
         {
             if (!ModelState.IsValid)
-                return BadRequest();
+                return BadRequest(new { Result = "Invalid Form Request" });
 
             var userFromDB = await _userManager.FindByNameAsync(twoFactorForm.Email);
             if (userFromDB == null)

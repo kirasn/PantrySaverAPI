@@ -232,6 +232,38 @@ namespace Models.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("PantrySaver.Models.EmailSupport", b =>
+                {
+                    b.Property<string>("EmailSupportId")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("EmailSupportID");
+
+                    b.Property<string>("Answer")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Answer");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Content");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailFrom")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("EmailFrom");
+
+                    b.Property<DateTime?>("ResponsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("EmailSupportId");
+
+                    b.ToTable("EmailSupport", (string)null);
+                });
+
             modelBuilder.Entity("PantrySaver.Models.Item", b =>
                 {
                     b.Property<string>("ItemId")
