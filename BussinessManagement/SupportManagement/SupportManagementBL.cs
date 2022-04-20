@@ -12,9 +12,9 @@ namespace BussinessManagement.SupportManagement
             _repo = repo;
         }
 
-        public Task<EmailSupport> PostNewEmail(EmailSupport emailSupport)
+        public async Task<EmailSupport> PostNewEmail(EmailSupport emailSupport)
         {
-            return _repo.PostNewEmail(emailSupport);
+            return await _repo.PostNewEmail(emailSupport);
         }
     }
 }

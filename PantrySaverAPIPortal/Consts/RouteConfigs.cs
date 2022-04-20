@@ -13,7 +13,11 @@ namespace PantrySaverAPIPortal.Consts
         // Routing: Account/
         public const string Profile = "Profile";
 
-        // Rounting: Support/
+        // Routing: Support/
         public const string Email = "Email";
+
+        // Routing: Pantry/
+        public const string Pantries = "Pantries";
+        public const string PantryDetails = "Pantries/{pantryId}";
     }
 }
