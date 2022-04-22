@@ -299,6 +299,9 @@ namespace Models.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ItemId");
 
                     b.ToTable("Item", (string)null);
@@ -309,6 +312,9 @@ namespace Models.Migrations
                     b.Property<string>("PantryId")
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("PantryID");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Location")
                         .IsRequired()

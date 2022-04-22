@@ -1,7 +1,9 @@
 using BussinessManagement.AccountManagement;
+using BussinessManagement.ItemManagement;
 using BussinessManagement.PantryManagement;
 using BussinessManagement.SupportManagement;
 using DataManagement.AccountManagement;
+using DataManagement.ItemManagement;
 using DataManagement.PantryManagement;
 using DataManagement.SupportManagement;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -76,6 +78,8 @@ builder.Services.AddScoped<ISupportManagementBL, SupportManagementBL>();
 builder.Services.AddScoped<ISupportManagementDL, SupportManagementDL>();
 builder.Services.AddScoped<IPantryManagementBL, PantryManagementBL>();
 builder.Services.AddScoped<IPantryManagementDL, PantryManagementDL>();
+builder.Services.AddScoped<IItemManagementBL, ItemManagementBL>();
+builder.Services.AddScoped<IItemManagementDL, ItemManagementDL>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

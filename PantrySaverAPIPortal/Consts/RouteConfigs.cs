@@ -19,5 +19,8 @@ namespace PantrySaverAPIPortal.Consts
         // Routing: Pantry/
         public const string Pantries = "Pantries";
         public const string PantryDetails = "Pantries/{pantryId}";
+
+        // Routing: Item/
+        public const string Items = "Items";
     }
 }
